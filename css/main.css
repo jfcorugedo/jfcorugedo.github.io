@@ -3075,6 +3075,12 @@ body.overflow {
     overflow: hidden;
 }
 
+@media screen and (min-width: 1024px) {
+    .head .row {
+        flex-direction: row;
+    }
+}
+
 .head .row .logo {
     display: flex;
     margin: auto;
