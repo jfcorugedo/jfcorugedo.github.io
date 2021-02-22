@@ -15,14 +15,11 @@ author_dir: /author
 author_title_prefix: 'Posted by '
 media_folder: /media/compressed
 author_default_avatar: /profile-pic.jpg
-tumblr: "#"
-pinterest: "#"
-instagram: "#"
-twitter: "#"
-facebook: "#"
-youtube: "#"
-vimeo: "#"
-soundcloud: "#"
+twitter: "jfcorugedo"
+github: jfcorugedo
+linkedin: jfcorugedo
+email: jfcorugedo@gmail.com
+email_md5: 0a28f0c98b05022926f49e57153db840
 
 encoding: utf-8
 defaults:
