@@ -3078,6 +3078,7 @@ body.overflow {
 @media screen and (min-width: 1024px) {
     .head .row {
         flex-direction: row;
+
     }
 }
 
