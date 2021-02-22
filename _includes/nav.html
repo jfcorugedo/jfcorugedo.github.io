@@ -39,9 +39,6 @@
         </nav>
         <nav class="iconnav">
             <ul>
-                <li class="sicon">
-                    <a href='#search'><i class='fa fa-search'></i></a>
-                </li>
                 {% if site.tumblr %}
                 <li class="social">
                     <a href="{{ site.tumblr }}" class="tumblr"><i class="fa fa-tumblr"></i></a>
@@ -56,7 +53,19 @@
                 </li>
                 {% endif %} {% if site.twitter %}
                 <li class="social">
-                    <a href="{{ site.twitter }}" class="twitter"><i class="fa fa-twitter"></i></a>
+                    <a href="https://twitter.com/{{ site.twitter }}" class="twitter"><i class="fa fa-twitter"></i></a>
+                </li>
+                {% endif %} {% if site.email %}
+                <li class="social">
+                    <a href="mailto:{{ site.email }}" class="twitter"><i class="fa fa-envelope"></i></a>
+                </li>
+                {% endif %} {% if site.github %}
+                <li class="social">
+                    <a href="https://github.com/{{ site.github }}" class="twitter"><i class="fa fa-github-alt"></i></a>
+                </li>
+                {% endif %} {% if site.linkedin %}
+                <li class="social">
+                    <a href="https://linkedin.com/in/{{ site.github }}" class="twitter"><i class="fa fa-linkedin"></i></a>
                 </li>
                 {% endif %} {% if site.facebook %}
                 <li class="social">
