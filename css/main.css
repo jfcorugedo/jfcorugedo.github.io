@@ -3063,6 +3063,9 @@ body.overflow {
 
 .head .row {
     position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     width: 100%;
     top: 0;
     left: 0;
@@ -3070,9 +3073,6 @@ body.overflow {
     padding: 30px 10px;
     box-sizing: border-box;
     overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
 }
 
 .head .row .logo {
