@@ -3087,10 +3087,8 @@ body.overflow {
     display: flex;
     margin: auto;
     transition: 0.3s all ease-in-out;
-    height: 50%;
-    max-height: 200px;
-    max-width: 200px;
-    width: 50%;
+    height: 200px;
+    width: 200px;
 }
 
 .head .row .logo svg {
