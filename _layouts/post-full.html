@@ -5,11 +5,6 @@
     </head>
 
     <body>
-        <header class="head">
-            {% include header.html %}
-            {% include nav.html %}
-        </header>
-        {% include search.html %}
         <div class="margin">
             <div class="content full">
                 <div class="content-container">
@@ -86,6 +81,11 @@
                 </div>
             </div>
         </div>
+        <header class="head">
+            {% include header.html %}
+            {% include nav.html %}
+        </header>
+        {% include search.html %}
         {% include footer.html %}
         
     </body>
