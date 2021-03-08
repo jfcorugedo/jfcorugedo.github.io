@@ -249,7 +249,7 @@ Perfect, because this is just what we need to do in this case.
 
 So a flatmap operator will execute a transformation over the value, and then will collapse two containers into just one.
 
-![FlatMap](../img/beReactiveMyFriend/FlatMapProblem.gif)
+![FlatMap](../img/beReactiveMyFriend/FlatMap.gif)
 
 Let's take a look at several examples using map and flatmap.
 
