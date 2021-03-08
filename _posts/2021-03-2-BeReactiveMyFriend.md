@@ -1,5 +1,6 @@
 ---
 author: jfcorugedo
+layout: post-full
 title: By Reactive my friend
 featimg: 3.jpg
 tags: [reactive,spring,webflux,reactor]
