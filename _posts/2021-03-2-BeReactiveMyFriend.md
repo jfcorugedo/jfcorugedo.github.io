@@ -344,7 +344,7 @@ That is the reason we really want to use flatmap in this kind of operations.
 
 > If the transformation you want to apply returns a value use map. However, if the transformation you need to apply returns the value inside an abstraction, then use flatmap to avoid having a value in a two-deep abstraction level. 
 
-## Conclusion
+### Conclusion
 
 Creating a reactive application, using reactive programming model, has a lot of benefits.
 
