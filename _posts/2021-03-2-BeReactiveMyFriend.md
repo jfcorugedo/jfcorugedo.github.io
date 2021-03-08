@@ -342,6 +342,8 @@ That is the reason we really want to use flatmap in this kind of operations.
 
 ### Map vs Flatmap
 
+As a rule, if you find yourself trying to figure out when to use `map` and when to use `flatmap` just follow this rule:
+
 > If the transformation you want to apply returns a value use map. However, if the transformation you need to apply returns the value inside an abstraction, then use flatmap to avoid having a value in a two-deep abstraction level. 
 
 ### Conclusion
