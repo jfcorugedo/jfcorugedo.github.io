@@ -5,7 +5,7 @@ featimg: 3.jpg
 tags: [reactive,spring,webflux,reactor]
 category: [programming]
 ---
-## Reactive programming model
+### Reactive history
 
 There have been a long time since the [Reactive Manifesto](https://www.reactivemanifesto.org/) was written in 2013.
 
@@ -102,7 +102,17 @@ All of these types are abstractions to deal with the problem that the value (`Pr
 
 ![Future](../img/beReactiveMyFriend/Future.gif)
 
-So we cannot manipulate Price object directly, unless we make our current thread to wait until the value is computed. But this is an anti-pattern, and will break the system.
+No matter the abstraction we are using (RxJava, reactivex, ...) all of them have set of common characteristics:
+
+* They are cointainers of a not-yet-computed value
+* They allow us to *register* what we want to do with the result
+* They follow a functional approach:
+    * High order functions (map, flatmap, zip, sequence, etc...)
+    * Encapsulate errors and deal with team as they were values
+
+So we cannot manipulate Price object directly, unless we make our current thread to wait until the value is computed. 
+
+But this is an anti-pattern, and will break the system.
 
 So instead of making our Thread wait until the Price object arrives, we need a way to tell what we want to do with that object.
 
@@ -176,7 +186,12 @@ After that, this Thread can be released to accomplish other tasks. By the time t
 
 The lambda will be executed **only** if there is a value inside the Mono. If the Mono is empty or it ends with a failure inside, the lambda will not be executed.
 
-It is important to note that no matter the container or the abstraction (List, Optional, Mono, Future), our business logic does not change: `b -> pricingService.computePrice(b)`.
+It is important to note that no matter the container or the abstraction (List, Optional, Mono, Future), our business logic does not change.
+The lambda we are executing is always the same: 
+
+```java
+b -> pricingService.computePrice(b)
+```
 
 That is one of the magic advantages of this approach. 
 
@@ -184,10 +199,161 @@ That is one of the magic advantages of this approach.
 
 If we are using Reactor (Mono, Flux, etc...) and for whatever reason we change to RxJava (Single, Flowable, etc...) our business logic will not change.
 
-**Flatmap**
+### Flatmap
 
 Great! Map is just what we need to manipulate objects inside a reactive application.
 
 But wait, what happens when the manipulation does not return another object, but an abstraction with an object inside:
 
 ![FlatMap Problem](../img/beReactiveMyFriend/FlatMapProblem.gif)
+
+What the hell!! Now we have a container inside another container. If you think it is difficult to work with a `Future` imagine working with a `Future` inside another `Future`:
+
+```java
+Future<Future<Price>> price
+```
+
+This is for sure something we don't want to work with. 
+
+It is difficult to reason about it: What does it mean? If a `Future` is a *container* of a not yet computed value, a `Future` inside another `Future` is a *container* of a *container* of a not yet computed value.
+
+If we want to apply a transformation over the value (`Price`) then we have to do something like this:
+
+```java
+Future<Future<Price>> price = ...;
+
+price.map( 
+        anotherFuture -> anotherFuture.map( 
+                price -> myService.doSomething(price) 
+        ) 
+);
+```
+
+We need to use a map operator inside another map. This is for sure **too complex**. 
+
+We really don't want to work with this kind of structures.
+
+What can we do to avoid having to work with this data structures?
+
+Flatmap to the rescue!
+
+A `flatmap` operator is just a `map` operator plus a `flatten` one.
+
+```java
+flatmap = map + flatten
+```
+
+We already know what a map operator is. A flatten operator will collapse two containers to create a single one.
+
+Perfect, because this is just what we need to do in this case.
+
+So a flatmap operator will execute a transformation over the value, and then will collapse two containers into just one.
+
+![FlatMap](../img/beReactiveMyFriend/FlatMapProblem.gif)
+
+Let's take a look at several examples using map and flatmap.
+
+**Optional**
+
+Given that:
+```java
+Optional<Price> computePrice(Book book) { ... }
+```
+
+And:
+```java
+Optional<Book> book = service.findBook(id);
+```
+
+When using map:
+```java
+Optional<Optional<Price>> price = book.map(b -> service.computePrice(b));
+```
+
+When using flatmap:
+```java
+Optional<Price> price = book.flatmap(b -> service.computePrice(b));
+```
+
+Notice that in this case map will return an Optional inside another Optional. 
+That structure makes no sense and it is difficult to work with it, so flatmap is better option here. 
+
+**List**
+
+Given that:
+```java
+List<Skills> findSkills(Developer developer) { ... }
+```
+
+And:
+```java
+List<Developer> developers = service.findDevelopers(ids);
+```
+
+When using map:
+```java
+List<List<Price>> skills = developers.map(dev -> service.findSkills(dev));
+```
+
+When using flatmap:
+```java
+List<Price> skills = developers.flatmap(dev -> service.findSkills(dev));
+```
+
+In this case we have a service that returns a list of skills of a given developer.
+
+If we want to know all the skills our staff have, it is better to use flatmap, because with map we will end up having a list of lists.
+
+**Mono**
+
+Given that:
+```java
+Mono<Price> computePrice(Book book) { ... }
+```
+
+And:
+```java
+Mono<Book> book = service.findBook(id);
+```
+
+When using map:
+```java
+Mono<Mono<Price>> price = book.map(b -> service.computePrice(b));
+```
+
+When using flatmap:
+```java
+Mono<Price> price = book.flatmap(b -> service.computePrice(b));
+```
+
+This is a very common case in a rective application. 
+
+We have an abstraction with a not-yet-computed value insie (`Mono<Book>`).
+
+We want to use that entity to compute another one. But the service we need to call is also reactive, so instead of returning a `Price` object it will return another abstraction with a not-yet-computed value inside: `Mono<Price>`.
+
+If we try to use map, we will end up with a very complex structure: 
+
+```java
+Mono<Mono<Price>>
+```
+
+That is the reason we really want to use flatmap in this kind of operations.
+
+### Map vs Flatmap
+
+> If the transformation you want to apply returns a value use map. However, if the transformation you need to apply returns the value inside an abstraction, then use flatmap to avoid having a value in a two-deep abstraction level. 
+
+## Conclusion
+
+Creating a reactive application, using reactive programming model, has a lot of benefits.
+
+It is a programming model that will help us build systems that are well prepared to meet the increasing demands that applications face today.
+
+The foundation for a Reactive application is Message-Passing. It creates a boundary between our components which allow them to be decoupled in time and in space.
+
+This kind of applications let us build resilience patterns easily: bulkheading, disaster recovery strategies, selective scaling, etc...
+
+However, it comes with a price. You need to work with these systems in a completely different way you have been doing till now.
+
+In this short article we have learnt how two high order functions (`map` and `flatmap`) can help us work with this new model.
